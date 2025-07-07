@@ -1,23 +1,29 @@
 "use client";
 
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { HiMenu } from "react-icons/hi";
-import { FaRegEdit, FaClipboardList, FaCalendarAlt } from "react-icons/fa";
-import { HiOutlineX, HiOutlineHome } from "react-icons/hi";
+import { useEffect, useState } from "react";
 
-export default function DashboardLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+interface LaporanHarianData {
+  nama: string;
+  status: string;
+  catatan: string;
+}
+import { FaRegEdit, FaClipboardList, FaCalendarAlt } from "react-icons/fa";
+import Link from "next/link";
+import { HiMenu, HiOutlineX, HiOutlineHome } from "react-icons/hi";
+
+export default function LaporanHarianPage() {
+  const [dataList, setDataList] = useState<LaporanHarianData[]>([]);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setSidebarOpen(false);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const dummyData: LaporanHarianData[] = [
+      { nama: "Budi", status: "Selesai", catatan: "Tugas selesai tepat waktu" },
+      { nama: "Sari", status: "Proses", catatan: "Masih mengerjakan laporan" },
+      { nama: "Andi", status: "Tertunda", catatan: "Menunggu approval" },
+    ];
+    setDataList(dummyData);
   }, []);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
@@ -73,25 +79,33 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
-      {/* Overlay Mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-30 z-40 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <div className="text-center px-6">
-          <h2 className="text-3xl font-bold mb-4 text-gray-800">
-            Selamat Datang!
-          </h2>
-          <p className="text-gray-600 leading-relaxed max-w-md mx-auto">
-            Pilih form atau laporan dari menu di samping. Sistem ini dibuat
-            untuk mempermudah pengisian dan pelacakan laporan harian dan
-            mingguan di lingkungan kerja Anda.
-          </p>
+      <div className="flex-1 p-6 overflow-x-auto">
+        <h1 className="text-3xl font-bold text-center text-blue-700 mb-6">
+          Laporan Mingguan
+        </h1>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300 text-sm">
+            <thead>
+              <tr className="bg-blue-100 text-gray-700 text-left">
+                <th className="px-4 py-2 border">No</th>
+                <th className="px-4 py-2 border">Nama</th>
+                <th className="px-4 py-2 border">Status</th>
+                <th className="px-4 py-2 border">Catatan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dataList.map((item, index) => (
+                <tr key={index} className="hover:bg-gray-50 text-gray-800">
+                  <td className="px-4 py-2 border">{index + 1}</td>
+                  <td className="px-4 py-2 border">{item.nama}</td>
+                  <td className="px-4 py-2 border">{item.status}</td>
+                  <td className="px-4 py-2 border">{item.catatan}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
