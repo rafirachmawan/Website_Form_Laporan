@@ -1,31 +1,87 @@
+// app/harian/page.tsx
 "use client";
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { HiMenu, HiOutlineX, HiOutlineHome } from "react-icons/hi";
+import { HiMenu, HiOutlineX } from "react-icons/hi";
 import { FaRegEdit, FaClipboardList, FaCalendarAlt } from "react-icons/fa";
+
+const projectList = [
+  "Aplikasi Mandiri Pencatatan Stock Gudang - 10 Juli 2025",
+  "Langganan SPBU Kalangan - Mayangkara Group - 10 Juli 2025",
+  "Implementasi Klikpeta Sebagai SFA - 1 Juli 2025 - 5 Juli 2025",
+  "Print Gabungan Faktur Beda Prinsipal - 1 juli 2025",
+  "Penetrasi EC, OA Area Ngunut 1 Juli 2025 - 1 Agustus 2025",
+  "Perbaikan Sistem Klaim - 20 Juli 2025",
+  "Pengganti Kanvas - 20 Juli 2025",
+  "Penjualan Barang PCS + Gimmick - 25 juni 2025 - 15 Juli 2025",
+  "Stock Opname Awal TLG 1 Juli 2025 - 5 Juli 2025",
+  "Posisi Admin Pajak - 5 Juli 2025",
+  "Implementasi Aplikasi Gudang - 30 Juli 2025",
+];
+
+// Sub project mapping
+const subProjectMap: Record<string, string[]> = {
+  "Aplikasi Mandiri Pencatatan Stock Gudang - 10 Juli 2025": [
+    "Fitur Generate per Prinsipal",
+    "Implementasi ke gudang",
+  ],
+  "Langganan SPBU Kalangan - Mayangkara Group - 10 Juli 2025": ["None"],
+  "Implementasi Klikpeta Sebagai SFA - 1 Juli 2025 - 5 Juli 2025": [
+    "Master Database (L, M, S)",
+    "Implementasi Kunjungan",
+    "Master Discon",
+    "Implementasi Order",
+    "Import Data Order ke APOS",
+    "Implementasi All Sales",
+    "Implementasi sales trenggalek",
+  ],
+  "Print Gabungan Faktur Beda Prinsipal - 1 juli 2025": ["None"],
+  "Penetrasi EC, OA Area Ngunut 1 Juli 2025 - 1 Agustus 2025": ["None"],
+  "Perbaikan Sistem Klaim - 20 Juli 2025": [
+    "Memperbaiki folder klaim",
+    "Closing FPN dan UDI",
+    "Validasi program klaim",
+  ],
+  "Pengganti Kanvas - 20 Juli 2025": ["None"],
+  "Penjualan Barang PCS + Gimmick - 25 juni 2025 - 15 Juli 2025": ["None"],
+  "Stock Opname Awal TLG 1 Juli 2025 - 5 Juli 2025": ["None"],
+  "Posisi Admin Pajak - 5 Juli 2025": ["None"],
+  "Implementasi Aplikasi Gudang - 30 Juli 2025": ["None"],
+};
 
 export default function LaporanHarianPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [project, setProject] = useState("");
   const [nama, setNama] = useState("");
+  const [peran, setPeran] = useState("");
+  const [sub, setSub] = useState("");
+  const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState("");
-  const [catatan, setCatatan] = useState("");
+  const [kegiatan, setKegiatan] = useState("");
+  const [prioritas, setPrioritas] = useState("");
+  const [bantuan, setBantuan] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Nama: ${nama}\nStatus: ${status}\nCatatan: ${catatan}`);
+    const data = {
+      project,
+      nama,
+      peran,
+      sub,
+      deadline,
+      status,
+      kegiatan,
+      prioritas,
+      bantuan,
+    };
+    alert("✅ Data berhasil dikirim:\n" + JSON.stringify(data, null, 2));
   };
 
-  // Close sidebar on large screen
+  // Reset sub project saat project berubah
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setSidebarOpen(false);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    setSub("");
+  }, [project]);
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
@@ -91,7 +147,6 @@ export default function LaporanHarianPage() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-full">
-        {/* Header mobile */}
         <header className="md:hidden bg-white px-4 py-4 flex items-center justify-between shadow-sm border-b">
           <h1 className="text-lg font-bold text-blue-700">
             Form Laporan Harian
@@ -101,64 +156,107 @@ export default function LaporanHarianPage() {
           </button>
         </header>
 
-        <main className="flex-1 flex items-center justify-center bg-gray-50 px-4">
+        {/* Scrollable Content */}
+        <main className="flex-1 overflow-y-auto bg-gray-50 px-4 py-6">
           <form
             onSubmit={handleSubmit}
-            className="w-full max-w-xl bg-white rounded-lg shadow p-6 space-y-6"
+            className="w-full max-w-xl mx-auto bg-white rounded-lg shadow p-6 space-y-6"
           >
-            <h1 className="text-2xl font-bold text-gray-800 text-center">
-              Form Laporan Harian
+            <h1 className="text-2xl font-bold text-gray-900 text-center">
+              Form Laporan Harian Project
             </h1>
 
-            {/* Dropdown Nama */}
+            {/* Project */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Pilih Nama
+              <label className="block text-[16px] font-medium text-gray-900 mb-1">
+                Pilih Project
               </label>
               <select
-                value={nama}
-                onChange={(e) => setNama(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={project}
+                onChange={(e) => setProject(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2 text-[16px] text-gray-900 bg-white"
                 required
               >
-                <option value="">-- Pilih Nama --</option>
-                <option value="Budi">Budi</option>
-                <option value="Sari">Sari</option>
-                <option value="Andi">Andi</option>
+                <option value="">-- Pilih Project --</option>
+                {projectList.map((p, i) => (
+                  <option key={i} value={p}>
+                    {p}
+                  </option>
+                ))}
               </select>
             </div>
 
-            {/* Dropdown Status */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              >
-                <option value="">-- Pilih Status --</option>
-                <option value="Selesai">Selesai</option>
-                <option value="Proses">Proses</option>
-                <option value="Tertunda">Tertunda</option>
-              </select>
-            </div>
+            {/* Sub Project */}
+            {project && (
+              <div>
+                <label className="block text-[16px] font-medium text-gray-900 mb-1">
+                  Sub Project
+                </label>
+                <select
+                  value={sub}
+                  onChange={(e) => setSub(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-[16px] text-gray-900 bg-white"
+                  required
+                >
+                  <option value="">-- Pilih Sub Project --</option>
+                  {(subProjectMap[project] || []).map((item, i) => (
+                    <option key={i} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-            {/* Textarea Catatan */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Catatan
-              </label>
-              <textarea
-                value={catatan}
-                onChange={(e) => setCatatan(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 h-28 resize-none bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Tuliskan catatan tambahan..."
-                required
-              />
-            </div>
+            {/* Nama, Peran, Deadline, Status, Kegiatan, Prioritas, Bantuan */}
+            {[
+              ["Nama", nama, setNama],
+              ["Peran", peran, setPeran, ["P-PIC", "C-PIC", "StakeHolder"]],
+              ["Deadline", deadline, setDeadline, "date"],
+              [
+                "Status Kesehatan Project",
+                status,
+                setStatus,
+                [
+                  "Hijau (Lancar Sesuai Rencana)",
+                  "Kuning (Ada Kendala Kecil)",
+                  "Oranye (Perlu Perhatian Serius)",
+                  "Merah (Krisis, Butuh Intervensi)",
+                ],
+              ],
+              ["Kegiatan Hari Ini", kegiatan, setKegiatan],
+              ["Prioritas Besok", prioritas, setPrioritas],
+              ["Butuh Bantuan?", bantuan, setBantuan],
+            ].map(([label, value, setValue, extra], i) => (
+              <div key={i}>
+                <label className="block text-[16px] font-medium text-gray-900 mb-1">
+                  {label}
+                </label>
+                {Array.isArray(extra) ? (
+                  <select
+                    value={value as string}
+                    onChange={(e) => setValue(e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-[16px] text-gray-900 bg-white"
+                    required
+                  >
+                    <option value="">-- Pilih --</option>
+                    {extra.map((opt, j) => (
+                      <option key={j} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type={extra === "date" ? "date" : "text"}
+                    value={value as string}
+                    onChange={(e) => setValue(e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-[16px] text-gray-900 bg-white"
+                    required
+                  />
+                )}
+              </div>
+            ))}
 
             <button
               type="submit"

@@ -1,30 +1,67 @@
 "use client";
 
+import { useState } from "react";
+import { HiOutlineX } from "react-icons/hi";
+import { FaRegEdit, FaCalendarAlt, FaClipboardList } from "react-icons/fa";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { HiMenu, HiOutlineX } from "react-icons/hi";
-import { FaRegEdit, FaClipboardList, FaCalendarAlt } from "react-icons/fa";
+
+const subOptions: Record<string, string[]> = {
+  "Aplikasi Mandiri Pencatatan Stock Gudang - 10 Juli 2025": [
+    "Fitur Generate per Prinsipal",
+    "Implementasi ke gudang",
+  ],
+  "Langganan SPBU Kalangan - Mayangkara Group - 10 Juli 2025": ["None"],
+  "Implementasi Klikpeta Sebagai SFA - 1 Juli 2025 - 5 Juli 2025": [
+    "Master Database (L, M, S) - 26 Juni 2025",
+    "Implementasi Kunjungan - 3 Juli 2025",
+    "Master Discon - 10 Juli 2025",
+    "Implementasi Order - 15 Juli 2025",
+    "Import Data Order ke APOS - 21 Juli 2025",
+    "Implementasi All Sales - 5 Agustus 2025",
+    "Implementasi sales trenggalek - 5 Agustus",
+  ],
+  "Print Gabungan Faktur Beda Prinsipal - 1 juli 2025": ["None"],
+  "Penetrasi EC, OA Area Ngunut 1 Juli 2025 - 1 Agustus 2025": ["None"],
+  "Perbaikan Sistem Klaim - 20 Juli 2025": [
+    "Memperbaiki folder klaim - 28 Juni 2025",
+    "Closing FPN dan UDI - 28 Juni 2025",
+    "Validasi program klaim - 20 Juli 2025",
+  ],
+  "Pengganti Kanvas - 20 Juli 2025": ["None"],
+  "Penjualan Barang PCS + Gimmick - 25 juni 2025 - 15 Juli 2025": ["None"],
+  "Stock Opname Awal TLG 1 Juli 2025 - 5 Juli 2025": ["None"],
+  "Posisi Admin Pajak - 5 Juli 2025": ["None"],
+  "Implementasi Aplikasi Gudang - 30 Juli 2025": ["None"],
+};
 
 export default function LaporanMingguanPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [nama, setNama] = useState("");
-  const [status, setStatus] = useState("");
-  const [rencana, setRencana] = useState("");
+  const [form, setForm] = useState({
+    nama: "",
+    deadline: "",
+    pic: "",
+    cpic: "",
+    project: "",
+    sub: "",
+    status: "",
+    progress: "",
+    pencapaian: "",
+    tantanganSolusi: "",
+    rencanaMingguDepan: "",
+    kebutuhanResource: "",
+    kesimpulan: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`Nama: ${nama}\nStatus: ${status}\nRencana: ${rencana}`);
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    if (e.target.name === "project") {
+      setForm((f) => ({ ...f, sub: "" }));
+    }
   };
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setSidebarOpen(false);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
@@ -50,29 +87,25 @@ export default function LaporanMingguanPage() {
             href="/harian"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
           >
-            <FaRegEdit className="text-blue-600" />
-            Form Laporan Harian
+            <FaRegEdit className="text-blue-600" /> Form Laporan Harian
           </Link>
           <Link
             href="/mingguan"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 bg-blue-100 text-blue-700 font-semibold"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
           >
-            <FaCalendarAlt className="text-green-600" />
-            Form Laporan Mingguan
+            <FaCalendarAlt className="text-green-600" /> Form Laporan Mingguan
           </Link>
           <Link
             href="/hasil-harian"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
           >
-            <FaClipboardList className="text-purple-600" />
-            Laporan Harian
+            <FaClipboardList className="text-purple-600" /> Laporan Harian
           </Link>
           <Link
             href="/hasil-mingguan"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
           >
-            <FaClipboardList className="text-indigo-600" />
-            Laporan Mingguan
+            <FaClipboardList className="text-indigo-600" /> Laporan Mingguan
           </Link>
         </nav>
         <div className="p-4 text-xs text-gray-400 mt-auto">
@@ -80,94 +113,121 @@ export default function LaporanMingguanPage() {
         </div>
       </aside>
 
-      {/* Overlay Mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-30 z-40 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      {/* Main */}
+      <main className="flex-1 p-6 overflow-y-auto">
+        <h1 className="text-3xl font-bold text-center text-blue-700 mb-6">
+          Form Laporan Mingguan
+        </h1>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col h-full">
-        {/* Header mobile */}
-        <header className="md:hidden bg-white px-4 py-4 flex items-center justify-between shadow-sm border-b">
-          <h1 className="text-lg font-bold text-blue-700">
-            Form Laporan Mingguan
-          </h1>
-          <button onClick={() => setSidebarOpen(true)}>
-            <HiMenu size={24} className="text-gray-600" />
-          </button>
-        </header>
-
-        <main className="flex-1 flex items-center justify-center bg-gray-50 px-4">
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-xl bg-white rounded-lg shadow p-6 space-y-6"
-          >
-            <h1 className="text-2xl font-bold text-gray-800 text-center">
-              Form Laporan Mingguan
-            </h1>
-
-            {/* Dropdown Nama */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Pilih Nama
+        <form className="max-w-2xl mx-auto bg-white p-6 rounded shadow space-y-4">
+          {[
+            ["nama", "Nama"],
+            ["deadline", "Deadline", "date"],
+            ["pic", "P-PIC"],
+            ["cpic", "C-PIC"],
+          ].map(([name, label, type = "text"]) => (
+            <div key={name}>
+              <label className="block mb-1 text-gray-700 font-medium">
+                {label}
               </label>
-              <select
-                value={nama}
-                onChange={(e) => setNama(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              >
-                <option value="">-- Pilih Nama --</option>
-                <option value="Budi">Budi</option>
-                <option value="Sari">Sari</option>
-                <option value="Andi">Andi</option>
-              </select>
-            </div>
-
-            {/* Dropdown Status */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Status Mingguan
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              >
-                <option value="">-- Pilih Status --</option>
-                <option value="Selesai">Selesai</option>
-                <option value="Proses">Proses</option>
-                <option value="Tertunda">Tertunda</option>
-              </select>
-            </div>
-
-            {/* Textarea Rencana */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Rencana Minggu Depan
-              </label>
-              <textarea
-                value={rencana}
-                onChange={(e) => setRencana(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 h-28 resize-none bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Tuliskan rencana..."
-                required
+              <input
+                name={name}
+                type={type}
+                value={form[name as keyof typeof form]}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md text-gray-800 placeholder-gray-500 text-base font-medium"
               />
             </div>
+          ))}
 
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-semibold transition"
+          {/* Project */}
+          <div>
+            <label className="block mb-1 text-gray-700 font-medium">
+              Project
+            </label>
+            <select
+              name="project"
+              value={form.project}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-gray-800 text-base font-medium"
             >
-              Simpan Laporan
-            </button>
-          </form>
-        </main>
-      </div>
+              <option value="">-- PILIH --</option>
+              {Object.keys(subOptions).map((proj) => (
+                <option key={proj} value={proj}>
+                  {proj}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sub Project */}
+          <div>
+            <label className="block mb-1 text-gray-700 font-medium">
+              Sub Project
+            </label>
+            <select
+              name="sub"
+              value={form.sub}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-gray-800 text-base font-medium"
+            >
+              <option value="">-- PILIH SUB --</option>
+              {(subOptions[form.project] || []).map((sub) => (
+                <option key={sub} value={sub}>
+                  {sub}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Status */}
+          <div>
+            <label className="block mb-1 text-gray-700 font-medium">
+              Status
+            </label>
+            <select
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-gray-800 text-base font-medium"
+            >
+              <option value="">-- PILIH STATUS --</option>
+              <option>Hijau (Lancar Sesuai Rencana)</option>
+              <option>Kuning (Ada Kendala Kecil)</option>
+              <option>Oranye (Perhatian Serius)</option>
+              <option>Merah (Krisis, Butuh Intervensi)</option>
+            </select>
+          </div>
+
+          {[
+            ["progress", "Progress Keseluruhan"],
+            ["pencapaian", "Pencapaian Utama"],
+            ["tantanganSolusi", "Tantangan dan Solusi"],
+            ["rencanaMingguDepan", "Rencana Minggu Depan"],
+            ["kebutuhanResource", "Kebutuhan Resource"],
+            ["kesimpulan", "Kesimpulan"],
+          ].map(([name, label]) => (
+            <div key={name}>
+              <label className="block mb-1 text-gray-700 font-medium">
+                {label}
+              </label>
+              <textarea
+                name={name}
+                value={form[name as keyof typeof form]}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md text-gray-800 placeholder-gray-500 text-base font-medium"
+              />
+            </div>
+          ))}
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          >
+            KIRIM
+          </button>
+        </form>
+      </main>
     </div>
   );
 }
