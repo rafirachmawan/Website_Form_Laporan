@@ -1,4 +1,3 @@
-// app/harian/page.tsx
 "use client";
 
 import Link from "next/link";
@@ -20,7 +19,6 @@ const projectList = [
   "Implementasi Aplikasi Gudang - 30 Juli 2025",
 ];
 
-// Sub project mapping
 const subProjectMap: Record<string, string[]> = {
   "Aplikasi Mandiri Pencatatan Stock Gudang - 10 Juli 2025": [
     "Fitur Generate per Prinsipal",
@@ -78,7 +76,6 @@ export default function LaporanHarianPage() {
     alert("✅ Data berhasil dikirim:\n" + JSON.stringify(data, null, 2));
   };
 
-  // Reset sub project saat project berubah
   useEffect(() => {
     setSub("");
   }, [project]);
@@ -156,7 +153,6 @@ export default function LaporanHarianPage() {
           </button>
         </header>
 
-        {/* Scrollable Content */}
         <main className="flex-1 overflow-y-auto bg-gray-50 px-4 py-6">
           <form
             onSubmit={handleSubmit}
@@ -208,33 +204,40 @@ export default function LaporanHarianPage() {
               </div>
             )}
 
-            {/* Nama, Peran, Deadline, Status, Kegiatan, Prioritas, Bantuan */}
-            {[
-              ["Nama", nama, setNama],
-              ["Peran", peran, setPeran, ["P-PIC", "C-PIC", "StakeHolder"]],
-              ["Deadline", deadline, setDeadline, "date"],
+            {/* Dynamic Fields */}
+            {(
               [
-                "Status Kesehatan Project",
-                status,
-                setStatus,
+                ["Nama", nama, setNama],
+                ["Peran", peran, setPeran, ["P-PIC", "C-PIC", "StakeHolder"]],
+                ["Deadline", deadline, setDeadline, "date"],
                 [
-                  "Hijau (Lancar Sesuai Rencana)",
-                  "Kuning (Ada Kendala Kecil)",
-                  "Oranye (Perlu Perhatian Serius)",
-                  "Merah (Krisis, Butuh Intervensi)",
+                  "Status Kesehatan Project",
+                  status,
+                  setStatus,
+                  [
+                    "Hijau (Lancar Sesuai Rencana)",
+                    "Kuning (Ada Kendala Kecil)",
+                    "Oranye (Perlu Perhatian Serius)",
+                    "Merah (Krisis, Butuh Intervensi)",
+                  ],
                 ],
-              ],
-              ["Kegiatan Hari Ini", kegiatan, setKegiatan],
-              ["Prioritas Besok", prioritas, setPrioritas],
-              ["Butuh Bantuan?", bantuan, setBantuan],
-            ].map(([label, value, setValue, extra], i) => (
+                ["Kegiatan Hari Ini", kegiatan, setKegiatan],
+                ["Prioritas Besok", prioritas, setPrioritas],
+                ["Butuh Bantuan?", bantuan, setBantuan],
+              ] as [
+                string,
+                string,
+                React.Dispatch<React.SetStateAction<string>>,
+                any?
+              ][]
+            ).map(([label, value, setValue, extra], i) => (
               <div key={i}>
                 <label className="block text-[16px] font-medium text-gray-900 mb-1">
                   {label}
                 </label>
                 {Array.isArray(extra) ? (
                   <select
-                    value={value as string}
+                    value={value}
                     onChange={(e) => setValue(e.target.value)}
                     className="w-full border border-gray-300 rounded px-3 py-2 text-[16px] text-gray-900 bg-white"
                     required
@@ -249,7 +252,7 @@ export default function LaporanHarianPage() {
                 ) : (
                   <input
                     type={extra === "date" ? "date" : "text"}
-                    value={value as string}
+                    value={value}
                     onChange={(e) => setValue(e.target.value)}
                     className="w-full border border-gray-300 rounded px-3 py-2 text-[16px] text-gray-900 bg-white"
                     required
