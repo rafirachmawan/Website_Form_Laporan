@@ -60,12 +60,13 @@ export default function LaporanHarianPage() {
   const [prioritas, setPrioritas] = useState("");
   const [bantuan, setBantuan] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const data = {
-      project,
       nama,
       peran,
+      project,
       sub,
       deadline,
       status,
@@ -73,7 +74,31 @@ export default function LaporanHarianPage() {
       prioritas,
       bantuan,
     };
-    alert("✅ Data berhasil dikirim:\n" + JSON.stringify(data, null, 2));
+
+    try {
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbyZQubjO8D3jKKJ3j9HBPBJlFf4Y68iDOQxb3JDhHe1cFZnS_ttKj7mVszi5TH625ZJew/exec",
+        {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify(data),
+        }
+      );
+
+      alert("✅ Laporan berhasil dikirim!");
+      // Reset form
+      setNama("");
+      setPeran("");
+      setProject("");
+      setSub("");
+      setDeadline("");
+      setStatus("");
+      setKegiatan("");
+      setPrioritas("");
+      setBantuan("");
+    } catch (error) {
+      alert("❌ Terjadi kesalahan: " + error);
+    }
   };
 
   useEffect(() => {
