@@ -1,29 +1,46 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { HiMenu, HiOutlineX, HiOutlineHome } from "react-icons/hi";
+import { HiMenu, HiOutlineX } from "react-icons/hi";
 import Link from "next/link";
 import { FaRegEdit, FaClipboardList, FaCalendarAlt } from "react-icons/fa";
 
 interface LaporanHarianData {
+  tanggal: string;
   nama: string;
+  peran: string;
+  project: string;
+  sub: string;
+  deadline: string;
   status: string;
-  catatan: string;
+  kegiatan: string;
+  prioritas: string;
+  bantuan: string;
 }
 
 export default function LaporanHarianPage() {
   const [dataList, setDataList] = useState<LaporanHarianData[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const dummyData: LaporanHarianData[] = [
-      { nama: "Budi", status: "Selesai", catatan: "Tugas selesai tepat waktu" },
-      { nama: "Sari", status: "Proses", catatan: "Masih mengerjakan laporan" },
-      { nama: "Andi", status: "Tertunda", catatan: "Menunggu approval" },
-    ];
-    setDataList(dummyData);
+    const fetchData = async () => {
+      try {
+        const res = await fetch(
+          "https://script.google.com/macros/s/AKfycbz_juFhtVjhImaRmx7zdR8uB5aSsOav2rcVLlJOFcc5Sr3R-wE70K6KEFCwuwU5LgLnmg/exec"
+        );
+        const data = await res.json();
+        setDataList(data);
+      } catch (err) {
+        console.error("Gagal mengambil data:", err);
+      }
+    };
+
+    fetchData();
+
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       {/* Sidebar */}
@@ -60,7 +77,7 @@ export default function LaporanHarianPage() {
           </Link>
           <Link
             href="/hasil-harian"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 bg-blue-100 text-gray-700 font-medium transition"
           >
             <FaClipboardList className="text-purple-600" />
             Laporan Harian
@@ -78,9 +95,26 @@ export default function LaporanHarianPage() {
         </div>
       </aside>
 
+      {/* Overlay untuk mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Main Content */}
       <div className="flex-1 p-6 overflow-x-auto">
-        <h1 className="text-3xl font-bold text-center text-blue-700 mb-6">
+        <header className="md:hidden bg-white px-4 py-4 flex items-center justify-between shadow-sm border-b">
+          <h1 className="text-lg font-bold text-blue-700">
+            Laporan Harian Project
+          </h1>
+          <button onClick={() => setSidebarOpen(true)}>
+            <HiMenu size={24} className="text-gray-600" />
+          </button>
+        </header>
+
+        <h1 className="text-3xl font-bold text-center text-blue-700 mb-6 mt-4 md:mt-0">
           Laporan Harian
         </h1>
 
@@ -89,20 +123,44 @@ export default function LaporanHarianPage() {
             <thead>
               <tr className="bg-blue-100 text-gray-700 text-left">
                 <th className="px-4 py-2 border">No</th>
+                <th className="px-4 py-2 border">Tanggal</th>
                 <th className="px-4 py-2 border">Nama</th>
+                <th className="px-4 py-2 border">Peran</th>
+                <th className="px-4 py-2 border">Project</th>
+                <th className="px-4 py-2 border">Sub Project</th>
+                <th className="px-4 py-2 border">Deadline</th>
                 <th className="px-4 py-2 border">Status</th>
-                <th className="px-4 py-2 border">Catatan</th>
+                <th className="px-4 py-2 border">Kegiatan</th>
+                <th className="px-4 py-2 border">Prioritas</th>
+                <th className="px-4 py-2 border">Bantuan</th>
               </tr>
             </thead>
             <tbody>
               {dataList.map((item, index) => (
                 <tr key={index} className="hover:bg-gray-50 text-gray-800">
                   <td className="px-4 py-2 border">{index + 1}</td>
+                  <td className="px-4 py-2 border">{item.tanggal}</td>
                   <td className="px-4 py-2 border">{item.nama}</td>
+                  <td className="px-4 py-2 border">{item.peran}</td>
+                  <td className="px-4 py-2 border">{item.project}</td>
+                  <td className="px-4 py-2 border">{item.sub}</td>
+                  <td className="px-4 py-2 border">{item.deadline}</td>
                   <td className="px-4 py-2 border">{item.status}</td>
-                  <td className="px-4 py-2 border">{item.catatan}</td>
+                  <td className="px-4 py-2 border">{item.kegiatan}</td>
+                  <td className="px-4 py-2 border">{item.prioritas}</td>
+                  <td className="px-4 py-2 border">{item.bantuan}</td>
                 </tr>
               ))}
+              {dataList.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={11}
+                    className="text-center text-gray-500 py-4 border"
+                  >
+                    Tidak ada data.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
