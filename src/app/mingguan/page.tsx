@@ -63,6 +63,41 @@ export default function LaporanMingguanPage() {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbw9y4SRgvGgAmPutOK5IviDYCYFu6lj415KzL9uCho-pe4a9MdDzlN1dmjmhdUGM5od/exec",
+        {
+          method: "POST",
+          body: JSON.stringify(form),
+          mode: "no-cors",
+        }
+      );
+
+      alert("✅ Laporan berhasil dikirim!");
+
+      setForm({
+        nama: "",
+        deadline: "",
+        pic: "",
+        cpic: "",
+        project: "",
+        sub: "",
+        status: "",
+        progress: "",
+        pencapaian: "",
+        tantanganSolusi: "",
+        rencanaMingguDepan: "",
+        kebutuhanResource: "",
+        kesimpulan: "",
+      });
+    } catch (error) {
+      alert("❌ Gagal mengirim laporan: " + error);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       {/* Sidebar */}
@@ -119,7 +154,10 @@ export default function LaporanMingguanPage() {
           Form Laporan Mingguan
         </h1>
 
-        <form className="max-w-2xl mx-auto bg-white p-6 rounded shadow space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="max-w-2xl mx-auto bg-white p-6 rounded shadow space-y-4"
+        >
           {[
             ["nama", "Nama"],
             ["deadline", "Deadline", "date"],
@@ -135,50 +173,35 @@ export default function LaporanMingguanPage() {
                 type={type}
                 value={form[name as keyof typeof form]}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-gray-800 placeholder-gray-500 text-base font-medium"
+                className="w-full p-2 border border-gray-300 rounded-md text-gray-800"
               />
             </div>
           ))}
 
-          {/* Project */}
-          <div>
-            <label className="block mb-1 text-gray-700 font-medium">
-              Project
-            </label>
-            <select
-              name="project"
-              value={form.project}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-gray-800 text-base font-medium"
-            >
-              <option value="">-- PILIH --</option>
-              {Object.keys(subOptions).map((proj) => (
-                <option key={proj} value={proj}>
-                  {proj}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Sub Project */}
-          <div>
-            <label className="block mb-1 text-gray-700 font-medium">
-              Sub Project
-            </label>
-            <select
-              name="sub"
-              value={form.sub}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-gray-800 text-base font-medium"
-            >
-              <option value="">-- PILIH SUB --</option>
-              {(subOptions[form.project] || []).map((sub) => (
-                <option key={sub} value={sub}>
-                  {sub}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Project & Sub */}
+          {[
+            ["project", "Project", Object.keys(subOptions)],
+            ["sub", "Sub Project", subOptions[form.project] || []],
+          ].map(([name, label, options]) => (
+            <div key={name}>
+              <label className="block mb-1 text-gray-700 font-medium">
+                {label}
+              </label>
+              <select
+                name={name}
+                value={form[name as keyof typeof form]}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md text-gray-800"
+              >
+                <option value="">-- PILIH --</option>
+                {options.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
 
           {/* Status */}
           <div>
@@ -189,7 +212,7 @@ export default function LaporanMingguanPage() {
               name="status"
               value={form.status}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-gray-800 text-base font-medium"
+              className="w-full p-2 border border-gray-300 rounded-md text-gray-800"
             >
               <option value="">-- PILIH STATUS --</option>
               <option>Hijau (Lancar Sesuai Rencana)</option>
@@ -199,6 +222,7 @@ export default function LaporanMingguanPage() {
             </select>
           </div>
 
+          {/* Textareas */}
           {[
             ["progress", "Progress Keseluruhan"],
             ["pencapaian", "Pencapaian Utama"],
@@ -215,7 +239,7 @@ export default function LaporanMingguanPage() {
                 name={name}
                 value={form[name as keyof typeof form]}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-gray-800 placeholder-gray-500 text-base font-medium"
+                className="w-full p-2 border border-gray-300 rounded-md text-gray-800"
               />
             </div>
           ))}
