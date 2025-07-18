@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { HiMenu } from "react-icons/hi";
-import { FaRegEdit, FaClipboardList, FaCalendarAlt } from "react-icons/fa";
-import { HiOutlineX, HiOutlineHome } from "react-icons/hi";
+import { HiMenu, HiOutlineX, HiOutlineHome } from "react-icons/hi";
+import {
+  FaRegEdit,
+  FaClipboardList,
+  FaCalendarAlt,
+  FaPlusCircle,
+} from "react-icons/fa";
 
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -38,6 +42,7 @@ export default function DashboardLayout() {
             <HiOutlineX size={24} />
           </button>
         </div>
+
         <nav className="flex-1 px-4 py-6 space-y-2">
           <Link
             href="/harian"
@@ -46,6 +51,15 @@ export default function DashboardLayout() {
             <FaRegEdit className="text-blue-600" />
             Form Laporan Harian
           </Link>
+
+          <Link
+            href="/tambah-project-harian"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 font-medium transition"
+          >
+            <FaPlusCircle className="text-yellow-500" />
+            Tambah Project Harian
+          </Link>
+
           <Link
             href="/mingguan"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
@@ -53,6 +67,15 @@ export default function DashboardLayout() {
             <FaCalendarAlt className="text-green-600" />
             Form Laporan Mingguan
           </Link>
+
+          <Link
+            href="/tambah-project-mingguan"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 font-medium transition"
+          >
+            <FaPlusCircle className="text-yellow-500" />
+            Tambah Project Mingguan
+          </Link>
+
           <Link
             href="/hasil-harian"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
@@ -68,6 +91,7 @@ export default function DashboardLayout() {
             Laporan Mingguan
           </Link>
         </nav>
+
         <div className="p-4 text-xs text-gray-400 mt-auto">
           © {new Date().getFullYear()} AstroGroup
         </div>
