@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { HiOutlineX } from "react-icons/hi";
-import { FaRegEdit, FaCalendarAlt, FaClipboardList } from "react-icons/fa";
+import {
+  FaRegEdit,
+  FaCalendarAlt,
+  FaClipboardList,
+  FaPlusCircle,
+} from "react-icons/fa";
 import Link from "next/link";
 
 const subOptions: Record<string, string[]> = {
@@ -117,28 +122,46 @@ export default function LaporanMingguanPage() {
             <HiOutlineX size={24} />
           </button>
         </div>
-        <nav className="flex-1 px-4 py-6 space-y-2">
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           <Link
             href="/harian"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
           >
             <FaRegEdit className="text-blue-600" /> Form Laporan Harian
           </Link>
+
+          {/* ✅ Tambah Project Harian */}
+          <Link
+            href="/tambah-project-harian"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 font-medium transition"
+          >
+            <FaPlusCircle className="text-yellow-500" /> Tambah Project Harian
+          </Link>
+
           <Link
             href="/mingguan"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-green-50 text-gray-700 font-medium transition"
           >
             <FaCalendarAlt className="text-green-600" /> Form Laporan Mingguan
           </Link>
+
+          {/* ✅ Tambah Project Mingguan */}
+          <Link
+            href="/tambah-project-mingguan"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 font-medium transition"
+          >
+            <FaPlusCircle className="text-yellow-500" /> Tambah Project Mingguan
+          </Link>
+
           <Link
             href="/hasil-harian"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-50 text-gray-700 font-medium transition"
           >
             <FaClipboardList className="text-purple-600" /> Laporan Harian
           </Link>
           <Link
             href="/hasil-mingguan"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-indigo-50 text-gray-700 font-medium transition"
           >
             <FaClipboardList className="text-indigo-600" /> Laporan Mingguan
           </Link>

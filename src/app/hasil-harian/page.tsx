@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import { HiMenu, HiOutlineX } from "react-icons/hi";
 import Link from "next/link";
-import { FaRegEdit, FaClipboardList, FaCalendarAlt } from "react-icons/fa";
+import {
+  FaRegEdit,
+  FaClipboardList,
+  FaCalendarAlt,
+  FaPlusCircle,
+} from "react-icons/fa";
 
 interface LaporanHarianData {
   tanggal: string;
@@ -36,7 +41,6 @@ export default function LaporanHarianPage() {
     };
 
     fetchData();
-
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -60,7 +64,8 @@ export default function LaporanHarianPage() {
             <HiOutlineX size={24} />
           </button>
         </div>
-        <nav className="flex-1 px-4 py-6 space-y-2">
+
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           <Link
             href="/harian"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
@@ -68,13 +73,33 @@ export default function LaporanHarianPage() {
             <FaRegEdit className="text-blue-600" />
             Form Laporan Harian
           </Link>
+
+          {/* ✅ Tambah Project Harian */}
+          <Link
+            href="/tambah-project-harian"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 font-medium transition"
+          >
+            <FaPlusCircle className="text-yellow-500" />
+            Tambah Project Harian
+          </Link>
+
           <Link
             href="/mingguan"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-green-50 text-gray-700 font-medium transition"
           >
             <FaCalendarAlt className="text-green-600" />
             Form Laporan Mingguan
           </Link>
+
+          {/* ✅ Tambah Project Mingguan */}
+          <Link
+            href="/tambah-project-mingguan"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 font-medium transition"
+          >
+            <FaPlusCircle className="text-yellow-500" />
+            Tambah Project Mingguan
+          </Link>
+
           <Link
             href="/hasil-harian"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 bg-blue-100 text-gray-700 font-medium transition"
@@ -90,6 +115,7 @@ export default function LaporanHarianPage() {
             Laporan Mingguan
           </Link>
         </nav>
+
         <div className="p-4 text-xs text-gray-400 mt-auto">
           © {new Date().getFullYear()} AstroGroup
         </div>
