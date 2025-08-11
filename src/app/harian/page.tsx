@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { HiMenu, HiOutlineX } from "react-icons/hi";
 import {
   FaRegEdit,
@@ -9,61 +9,56 @@ import {
   FaCalendarAlt,
   FaPlusCircle,
 } from "react-icons/fa";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../utils/firebase";
 
-const projectList = [
-  "Aplikasi Mandiri Pencatatan Stock Gudang - 10 Juli 2025",
-  "Langganan SPBU Kalangan - Mayangkara Group - 10 Juli 2025",
-  "Implementasi Klikpeta Sebagai SFA - 1 Juli 2025 - 5 Juli 2025",
-  "Print Gabungan Faktur Beda Prinsipal - 1 juli 2025",
-  "Penetrasi EC, OA Area Ngunut 1 Juli 2025 - 1 Agustus 2025",
-  "Perbaikan Sistem Klaim - 20 Juli 2025",
-  "Pengganti Kanvas - 20 Juli 2025",
-  "Penjualan Barang PCS + Gimmick - 25 juni 2025 - 15 Juli 2025",
-  "Stock Opname Awal TLG 1 Juli 2025 - 5 Juli 2025",
-  "Posisi Admin Pajak - 5 Juli 2025",
-  "Implementasi Aplikasi Gudang - 30 Juli 2025",
-];
-
-const subProjectMap: Record<string, string[]> = {
-  "Aplikasi Mandiri Pencatatan Stock Gudang - 10 Juli 2025": [
-    "Fitur Generate per Prinsipal",
-    "Implementasi ke gudang",
-  ],
-  "Langganan SPBU Kalangan - Mayangkara Group - 10 Juli 2025": ["None"],
-  "Implementasi Klikpeta Sebagai SFA - 1 Juli 2025 - 5 Juli 2025": [
-    "Master Database (L, M, S)",
-    "Implementasi Kunjungan",
-    "Master Discon",
-    "Implementasi Order",
-    "Import Data Order ke APOS",
-    "Implementasi All Sales",
-    "Implementasi sales trenggalek",
-  ],
-  "Print Gabungan Faktur Beda Prinsipal - 1 juli 2025": ["None"],
-  "Penetrasi EC, OA Area Ngunut 1 Juli 2025 - 1 Agustus 2025": ["None"],
-  "Perbaikan Sistem Klaim - 20 Juli 2025": [
-    "Memperbaiki folder klaim",
-    "Closing FPN dan UDI",
-    "Validasi program klaim",
-  ],
-  "Pengganti Kanvas - 20 Juli 2025": ["None"],
-  "Penjualan Barang PCS + Gimmick - 25 juni 2025 - 15 Juli 2025": ["None"],
-  "Stock Opname Awal TLG 1 Juli 2025 - 5 Juli 2025": ["None"],
-  "Posisi Admin Pajak - 5 Juli 2025": ["None"],
-  "Implementasi Aplikasi Gudang - 30 Juli 2025": ["None"],
-};
+type SetState = React.Dispatch<React.SetStateAction<string>>;
 
 export default function LaporanHarianPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // nilai form
   const [project, setProject] = useState("");
+  const [sub, setSub] = useState("");
   const [nama, setNama] = useState("");
   const [peran, setPeran] = useState("");
-  const [sub, setSub] = useState("");
   const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState("");
   const [kegiatan, setKegiatan] = useState("");
   const [prioritas, setPrioritas] = useState("");
   const [bantuan, setBantuan] = useState("");
+
+  // opsi project & sub (realtime dari Firestore)
+  const [projectOptions, setProjectOptions] = useState<string[]>([]);
+  const [subOptionsMap, setSubOptionsMap] = useState<Record<string, string[]>>(
+    {}
+  );
+
+  // ambil data master project harian (realtime)
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "projectHarian"), (snap) => {
+      const names: string[] = [];
+      const subMap: Record<string, string[]> = {};
+      snap.forEach((doc) => {
+        const d = doc.data() as { nama?: string; subProjects?: string[] };
+        if (!d?.nama) return;
+        names.push(d.nama);
+        subMap[d.nama] =
+          Array.isArray(d.subProjects) && d.subProjects.length > 0
+            ? d.subProjects
+            : ["None"];
+      });
+      names.sort((a, b) => a.localeCompare(b));
+      setProjectOptions(names);
+      setSubOptionsMap(subMap);
+    });
+    return () => unsub();
+  }, []);
+
+  // reset sub saat project berubah
+  useEffect(() => {
+    setSub("");
+  }, [project]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +86,7 @@ export default function LaporanHarianPage() {
       );
 
       alert("✅ Laporan berhasil dikirim!");
+      // reset form
       setNama("");
       setPeran("");
       setProject("");
@@ -104,10 +100,6 @@ export default function LaporanHarianPage() {
       alert("❌ Terjadi kesalahan: " + error);
     }
   };
-
-  useEffect(() => {
-    setSub("");
-  }, [project]);
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
@@ -132,13 +124,12 @@ export default function LaporanHarianPage() {
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           <Link
             href="/harian"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-50 text-gray-700 font-medium transition"
           >
             <FaRegEdit className="text-blue-600" />
             Form Laporan Harian
           </Link>
 
-          {/* ✅ Tambah Project Harian */}
           <Link
             href="/tambah-project-harian"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 font-medium transition"
@@ -155,7 +146,6 @@ export default function LaporanHarianPage() {
             Form Laporan Mingguan
           </Link>
 
-          {/* ✅ Tambah Project Mingguan */}
           <Link
             href="/tambah-project-mingguan"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 font-medium transition"
@@ -171,6 +161,7 @@ export default function LaporanHarianPage() {
             <FaClipboardList className="text-purple-600" />
             Laporan Harian
           </Link>
+
           <Link
             href="/hasil-mingguan"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-indigo-50 text-gray-700 font-medium transition"
@@ -195,6 +186,7 @@ export default function LaporanHarianPage() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-full">
+        {/* Header mobile */}
         <header className="md:hidden bg-white px-4 py-4 flex items-center justify-between shadow-sm border-b">
           <h1 className="text-lg font-bold text-blue-700">
             Form Laporan Harian
@@ -225,8 +217,8 @@ export default function LaporanHarianPage() {
                 required
               >
                 <option value="">-- Pilih Project --</option>
-                {projectList.map((p, i) => (
-                  <option key={i} value={p}>
+                {projectOptions.map((p) => (
+                  <option key={p} value={p}>
                     {p}
                   </option>
                 ))}
@@ -246,8 +238,8 @@ export default function LaporanHarianPage() {
                   required
                 >
                   <option value="">-- Pilih Sub Project --</option>
-                  {(subProjectMap[project] || []).map((item, i) => (
-                    <option key={i} value={item}>
+                  {(subOptionsMap[project] || []).map((item) => (
+                    <option key={item} value={item}>
                       {item}
                     </option>
                   ))}
@@ -255,6 +247,7 @@ export default function LaporanHarianPage() {
               </div>
             )}
 
+            {/* Dynamic Fields */}
             {(
               [
                 ["Nama", nama, setNama],
@@ -274,12 +267,7 @@ export default function LaporanHarianPage() {
                 ["Kegiatan Hari Ini", kegiatan, setKegiatan],
                 ["Prioritas Besok", prioritas, setPrioritas],
                 ["Butuh Bantuan?", bantuan, setBantuan],
-              ] as [
-                string,
-                string,
-                React.Dispatch<React.SetStateAction<string>>,
-                any?
-              ][]
+              ] as [string, string, SetState, any?][]
             ).map(([label, value, setValue, extra], i) => (
               <div key={i}>
                 <label className="block text-[16px] font-medium text-gray-900 mb-1">
@@ -293,8 +281,8 @@ export default function LaporanHarianPage() {
                     required
                   >
                     <option value="">-- Pilih --</option>
-                    {extra.map((opt, j) => (
-                      <option key={j} value={opt}>
+                    {extra.map((opt: string) => (
+                      <option key={opt} value={opt}>
                         {opt}
                       </option>
                     ))}
